@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Uniswap Token Swap</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body style="font-family: Arial; padding: 20px;">
+  <h2>💱 Uniswap Token Swap</h2>
+
+  <label>From Token:</label>
+  <select id="tokenFrom">
+    <option value="WETH">WETH</option>
+    <option value="DAI">DAI</option>
+    <option value="USDC">USDC</option>
+    <option value="USDT">USDT</option>
+  </select><br><br>
+
+  <label>To Token:</label>
+  <select id="tokenTo">
+    <option value="DAI">DAI</option>
+    <option value="WETH">WETH</option>
+    <option value="USDC">USDC</option>
+    <option value="USDT">USDT</option>
+  </select><br><br>
+
+  <label>Amount In (USD):</label>
+  <input type="text" id="amountInUSD" placeholder="e.g. 1"><br><br>
+
+  <label>Min Amount Out (USD):</label>
+  <input type="text" id="amountOutMinUSD" placeholder="e.g. 0.99"><br><br>
+
+  <label>Your Wallet Address:</label>
+  <input type="text" id="toAddress" placeholder="Your wallet address"><br><br>
+
+  <button onclick="swapTokens()">Swap</button>
+  <p id="status"></p>
+
+  <script src="swap.js"></script>
+</body>
+</html>
