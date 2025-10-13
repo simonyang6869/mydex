@@ -2,8 +2,16 @@
 
 [![Live Site](https://img.shields.io/badge/Live_Site-Vercel-green?style=flat-square)](https://mydex-seven.vercel.app)
 [![Preview](https://img.shields.io/badge/Preview-Latest_Deploy-blue?style=flat-square)](https://mydex-seven.vercel.app)
+Video tutorial: [Watch on YouTube](https://youtu.be/DxhU5wpNu9o?si=2BjQ4SWRPwDWEMac)
 
 A simple Uniswap V2-style token swap interface built with **HTML + JS + MetaMask + Ethers.js**.
+
+- Frontend: `public/index.html`, `public/swap.js`
+- Example contracts: `contract/factory.sol`, `contract/router.sol` (placeholders for your own UniswapV2-compatible contracts)
+
+Deploy Your Own Contracts
+-----------------------------------
+If you want your own Factory/Router. The repo includes placeholders in `contract/` — you can replace them or point to your own.
 
 ---
 
@@ -23,3 +31,11 @@ A simple Uniswap V2-style token swap interface built with **HTML + JS + MetaMask
    ```bash
    cd public
    python3 -m http.server
+
+
+Frontend Configuration
+----------------------
+Once deployed, update the frontend addresses:
+- Open `public/swap.js`
+- Set `routerAddress` to your deployed router
+- Update `tokenAddresses` to the ERC-20 tokens on your network
