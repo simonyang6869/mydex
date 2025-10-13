@@ -2,42 +2,118 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>My Dex</title>
+<title>Simple Dex</title>
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #0b0e11; color: #e6e8ea; font-family: Inter, Arial, sans-serif; }
+.container { max-width: 760px; margin: 0 auto; padding: 24px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand h2 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: .3px; }
+.wallet { display: flex; align-items: center; gap: 10px; }
+.wallet #walletAddress { margin: 0; font-size: 12px; color: #9aa4af; }
+.card { background: radial-gradient(120% 120% at 100% 0%, rgba(43,135,255,.08), rgba(122,90,248,.06) 40%, rgba(20,26,31,1) 60%), #141a1f; border: 1px solid #1f2a33; border-radius: 20px; padding: 20px; box-shadow: 0 16px 40px rgba(0,0,0,.35); }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+label { font-size: 12px; color: #9aa4af; }
+select, input[type="text"] { width: 100%; background: #0f1317; color: #e6e8ea; border: 1px solid #1f2a33; border-radius: 14px; padding: 12px 14px; outline: none; transition: border .15s, box-shadow .15s, transform .12s ease; }
+select:focus, input[type="text"]:focus { border-color: #2b87ff; box-shadow: 0 0 0 3px rgba(43,135,255,.15); transform: translateY(-1px); }
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.swap-actions { display: flex; flex-direction: column; gap: 10px; }
+.primary-btn { width: 100%; background: linear-gradient(90deg,#2b87ff,#7a5af8); color: #fff; border: 0; border-radius: 14px; padding: 14px; font-weight: 600; cursor: pointer; transition: transform .08s ease, filter .15s ease, box-shadow .15s ease; box-shadow: 0 8px 18px rgba(43,135,255,.25); }
+.primary-btn:hover { filter: brightness(1.05); }
+.primary-btn:active { transform: translateY(1px) scale(0.995); }
+.primary-btn:disabled { filter: grayscale(.4); cursor: not-allowed; }
+.ghost-btn { background: #0f1317; color: #e6e8ea; border: 1px solid #22303a; border-radius: 12px; padding: 10px 14px; cursor: pointer; transition: transform .08s ease, border-color .15s ease; }
+.ghost-btn:hover { transform: translateY(-1px); border-color: #2b87ff; }
+.status { min-height: 20px; font-size: 12px; color: #9aa4af; }
+.divider { height: 1px; background: #1f2a33; margin: 8px 0 16px 0; border: 0; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.row-inline { display: flex; gap: 8px; align-items: center; }
+/* Switch button between tokens */
+.switch-wrap { display: flex; justify-content: center; }
+.switch-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid #22303a; background: #0f1317; color: #e6e8ea; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .25s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease; box-shadow: 0 6px 14px rgba(0,0,0,.25); }
+.switch-btn:hover { transform: rotate(180deg) scale(1.04); border-color: #2b87ff; background: #101820; }
+.flash { animation: flash 500ms ease; }
+@keyframes flash { 0%{ box-shadow: 0 0 0 0 rgba(43,135,255,.0);} 50%{ box-shadow: 0 0 0 6px rgba(43,135,255,.15);} 100%{ box-shadow: 0 0 0 0 rgba(43,135,255,.0);} }
+/* Button press pulse */
+.primary-btn.pulse { animation: pulse 600ms ease; }
+@keyframes pulse { 0%{ box-shadow: 0 0 0 0 rgba(43,135,255,.35);} 100%{ box-shadow: 0 0 0 18px rgba(43,135,255,0);} }
+@media (max-width: 600px) {
+  .row, .controls { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body style="font-family: Arial; padding: 20px;">
-<h2>My Dex</h2>
-<button id="connectWallet">Connect Wallet</button>
-<button id="disconnectWallet">Disconnect</button>
+<div class="container">
+<div class="topbar">
+<div class="brand"><h2>Simple Dex</h2></div>
+<div class="wallet">
+<button id="connectWallet" class="ghost-btn">Connect Wallet</button>
+<button id="disconnectWallet" class="ghost-btn">Disconnect</button>
 <p id="walletAddress">Wallet: Not connected</p>
-<label>From Token:</label>
+</div>
+</div>
+
+<div class="card">
+<div class="stack">
+
+<div class="row">
+<div class="field">
+<label>From Token</label>
 <select id="tokenFrom">
   <option value="WETH">WETH</option>
   <option value="DAI">DAI</option>
   <option value="USDC">USDC</option>
   <option value="USDT">USDT</option>
-</select><br><br>
-<label>To Token:</label>
+</select>
+</div>
+<div class="field">
+<label>To Token</label>
 <select id="tokenTo">
   <option value="DAI">DAI</option>
   <option value="USDC">USDC</option>
   <option value="USDT">USDT</option>
   <option value="WETH">WETH</option>
-</select><br><br>
-<label>Input Mode:</label>
+</select>
+</div>
+</div>
+
+<div class="switch-wrap">
+<button id="switchPair" class="switch-btn" aria-label="Switch tokens">⟲</button>
+</div>
+
+<div class="controls">
+<div class="field">
+<label>Input Mode</label>
 <select id="inputMode">
   <option value="usd">USD</option>
   <option value="token">Token Amount</option>
-</select><br><br>
+</select>
+</div>
+<div class="field">
+<label>Slippage %</label>
+<input type="text" id="slippage" placeholder="1">
+</div>
+</div>
 
-<label>Amount:</label>
-<input type="text" id="amountInput" placeholder="e.g. 10"><br><br>
+<div class="field">
+<label>Amount</label>
+<input type="text" id="amountInput" placeholder="e.g. 10">
+</div>
 
-<label>Slippage %:</label>
-<input type="text" id="slippage" placeholder="1"><br><br>
+<hr class="divider">
 
-<button id="swapButton">Swap</button>
-<p id="status"></p>
+<div class="swap-actions">
+<button id="swapButton" class="primary-btn">Swap</button>
+<p id="status" class="status"></p>
+</div>
+
+</div>
+</div>
+
+</div>
 <script src="./swap.js"></script>
 </body>
 </html>

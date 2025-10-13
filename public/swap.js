@@ -37,6 +37,32 @@ document.getElementById("disconnectWallet").onclick = () => {
   document.getElementById("walletAddress").innerText = "Wallet: Not connected";
 };
 
+// UI animations and interactions
+const swapButtonEl = document.getElementById("swapButton");
+if (swapButtonEl) {
+  swapButtonEl.addEventListener("click", () => {
+    swapButtonEl.classList.remove("pulse");
+    // reflow to restart animation
+    void swapButtonEl.offsetWidth;
+    swapButtonEl.classList.add("pulse");
+  });
+}
+
+const tokenFromEl = document.getElementById("tokenFrom");
+const tokenToEl = document.getElementById("tokenTo");
+const switchPairEl = document.getElementById("switchPair");
+if (switchPairEl && tokenFromEl && tokenToEl) {
+  switchPairEl.addEventListener("click", () => {
+    const prevFrom = tokenFromEl.value;
+    const prevTo = tokenToEl.value;
+    tokenFromEl.value = prevTo;
+    tokenToEl.value = prevFrom;
+    tokenFromEl.classList.add("flash");
+    tokenToEl.classList.add("flash");
+    setTimeout(() => { tokenFromEl.classList.remove("flash"); tokenToEl.classList.remove("flash"); }, 550);
+  });
+}
+
 async function fetchTokenPrices() {
   const ids = ['weth','dai','usd-coin','tether'];
   const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids.join(',')}&vs_currencies=usd`;
@@ -101,12 +127,12 @@ async function swapTokens() {
 
     const allowance = await tokenFromContract.allowance(userAddress, routerAddress);
     if (allowance.lt(amountInWei)) {
-      status.innerText = `⏳ Approving ${tokenFrom}...`;
+      status.innerText = `Approving ${tokenFrom}...`;
       const txApprove = await tokenFromContract.approve(routerAddress, amountInWei);
       await txApprove.wait();
     }
 
-    status.innerText = `💱 Swapping ${tokenFrom} → ${tokenTo}...`;
+    status.innerText = `Swapping ${tokenFrom} to ${tokenTo}...`;
     const deadline = Math.floor(Date.now() / 1000) + 300;
     const tx = await router.swapExactTokensForTokens(
       amountInWei,
@@ -120,7 +146,8 @@ async function swapTokens() {
     await tx.wait();
     status.innerText = `Swap successful! TX: ${tx.hash}`;
   } catch (err) {
-    document.getElementById("status").innerText = `Error: ${err.message}`;
+    const msg = (err && err.code === "ACTION_REJECTED") ? "Canceled the transaction." : `Error: ${err.message}`;
+    document.getElementById("status").innerText = msg;
     console.error(err);
   }
 }
