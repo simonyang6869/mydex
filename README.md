@@ -1,4 +1,4 @@
-# My DEX – Uniswap V2 Token Swap Interface
+# Uniswap V2 Token Swap Interface
 
 [![Live Site](https://img.shields.io/badge/Live_Site-Vercel-green?style=flat-square)](https://mydex-seven.vercel.app)
 [![Preview](https://img.shields.io/badge/Preview-Latest_Deploy-blue?style=flat-square)](https://mydex-seven.vercel.app)
