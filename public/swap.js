@@ -4,13 +4,11 @@ const tokenAddresses = {
   USDC: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   USDT: "0xdAC17F958D2ee523a2206206994597C13D831ec7"
 };
-
 const routerAddress = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
 const routerABI = [
   "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)",
   "function swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts)"
 ];
-
 const erc20ABI = [
   "function approve(address spender, uint value) public returns (bool)",
   "function allowance(address owner, address spender) view returns (uint256)",
@@ -30,6 +28,13 @@ document.getElementById("connectWallet").onclick = async () => {
   signer = provider.getSigner();
   userAddress = await signer.getAddress();
   document.getElementById("walletAddress").innerText = "Wallet: " + userAddress;
+};
+
+document.getElementById("disconnectWallet").onclick = () => {
+  provider = null;
+  signer = null;
+  userAddress = null;
+  document.getElementById("walletAddress").innerText = "Wallet: Not connected";
 };
 
 async function fetchTokenPrices() {
