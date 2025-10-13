@@ -23,8 +23,14 @@
   <option value="USDT">USDT</option>
   <option value="WETH">WETH</option>
 </select><br><br>
-<label>Amount in USD:</label>
-<input type="text" id="amountInUSD" placeholder="e.g. 10"><br><br>
+<label>Input Mode:</label>
+<select id="inputMode">
+  <option value="usd">USD</option>
+  <option value="token">Token Amount</option>
+</select><br><br>
+
+<label>Amount:</label>
+<input type="text" id="amountInput" placeholder="e.g. 10"><br><br>
 
 <label>Slippage %:</label>
 <input type="text" id="slippage" placeholder="1"><br><br>
@@ -79,18 +85,21 @@ async function swapTokens() {
     const tokenTo = document.getElementById("tokenTo").value;
     if (tokenFrom === tokenTo) { alert("Cannot swap same token"); return; }
 
-    const amountInUSD = parseFloat(document.getElementById("amountInUSD").value);
+    const amountValue = parseFloat(document.getElementById("amountInput").value);
+    const inputMode = document.getElementById("inputMode").value;
     const slippagePercent = parseFloat(document.getElementById("slippage").value || 1);
     const status = document.getElementById("status");
     const router = new ethers.Contract(routerAddress, routerABI, signer);
 
     const tokenPricesUSD = await fetchTokenPrices();
+    let amountInToken = inputMode === "usd"
+      ? amountValue / tokenPricesUSD[tokenFrom]
+      : amountValue;
+
     const tokenFromContract = new ethers.Contract(tokenAddresses[tokenFrom], erc20ABI, signer);
     const tokenToContract = new ethers.Contract(tokenAddresses[tokenTo], erc20ABI, signer);
     const decimalsFrom = await tokenFromContract.decimals();
-    const decimalsTo = await tokenToContract.decimals();
 
-    let amountInToken = amountInUSD / tokenPricesUSD[tokenFrom];
     amountInToken = Number(amountInToken.toFixed(decimalsFrom));
     const amountInWei = ethers.utils.parseUnits(amountInToken.toString(), decimalsFrom);
 
@@ -110,8 +119,15 @@ async function swapTokens() {
     }
 
     status.innerText = `Swapping ${tokenFrom} → ${tokenTo}...`;
-    const deadline = Math.floor(Date.now()/1000) + 300;
-    const tx = await router.swapExactTokensForTokens(amountInWei, amountOutMin, path, userAddress, deadline, { gasLimit: ethers.utils.hexlify(200000) });
+    const deadline = Math.floor(Date.now() / 1000) + 300;
+    const tx = await router.swapExactTokensForTokens(
+      amountInWei,
+      amountOutMin,
+      path,
+      userAddress,
+      deadline,
+      { gasLimit: ethers.utils.hexlify(200000) }
+    );
     await tx.wait();
     status.innerText = `Swap successful! TX: ${tx.hash}`;
   } catch (err) {
