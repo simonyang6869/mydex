@@ -6,101 +6,259 @@
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; background: #0b0e11; color: #e6e8ea; font-family: Inter, Arial, sans-serif; }
-.container { max-width: 760px; margin: 0 auto; padding: 24px; }
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --text-primary: #f0f6fc;
+  --text-secondary: #8b949e;
+  --border-color: #30363d;
+  --border-hover: #1f6feb;
+  --accent-primary: #238636;
+  --accent-secondary: #1f6feb;
+  --success: #238636;
+  --warning: #d29922;
+  --error: #da3633;
+}
+
+body { margin: 0; background: var(--bg-primary); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; transition: background 0.3s ease, color 0.3s ease; }
+
+.nav { background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 0 24px; position: sticky; top: 0; z-index: 100; }
+.nav-container { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.nav-brand { display: flex; align-items: center; gap: 10px; }
+.nav-brand h1 { margin: 0; font-size: 20px; font-weight: 600; color: var(--text-primary); }
+.nav-menu { display: flex; align-items: center; gap: 4px; }
+.nav-item { padding: 6px 12px; border-radius: 6px; text-decoration: none; color: var(--text-secondary); font-weight: 500; transition: all 0.15s ease; cursor: pointer; border: none; background: none; font-size: 14px; }
+.nav-item:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+.nav-item.active { color: var(--accent-primary); background: rgba(35,134,54,0.1); }
+.nav-actions { display: flex; align-items: center; gap: 8px; }
+.theme-toggle { width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s ease; font-size: 14px; }
+.theme-toggle:hover { border-color: var(--border-hover); background: var(--bg-primary); }
+
+.container { max-width: 420px; margin: 0 auto; padding: 20px; }
 .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand h2 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: .3px; }
 .wallet { display: flex; align-items: center; gap: 10px; }
-.wallet #walletAddress { margin: 0; font-size: 12px; color: #9aa4af; }
-.card { background: radial-gradient(120% 120% at 100% 0%, rgba(43,135,255,.08), rgba(122,90,248,.06) 40%, rgba(20,26,31,1) 60%), #141a1f; border: 1px solid #1f2a33; border-radius: 20px; padding: 20px; box-shadow: 0 16px 40px rgba(0,0,0,.35); }
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.field { display: flex; flex-direction: column; gap: 8px; }
-label { font-size: 12px; color: #9aa4af; }
-select, input[type="text"] { width: 100%; background: #0f1317; color: #e6e8ea; border: 1px solid #1f2a33; border-radius: 14px; padding: 12px 14px; outline: none; transition: border .15s, box-shadow .15s, transform .12s ease; }
-select:focus, input[type="text"]:focus { border-color: #2b87ff; box-shadow: 0 0 0 3px rgba(43,135,255,.15); transform: translateY(-1px); }
-.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-.swap-actions { display: flex; flex-direction: column; gap: 10px; }
-.primary-btn { width: 100%; background: linear-gradient(90deg,#2b87ff,#7a5af8); color: #fff; border: 0; border-radius: 14px; padding: 14px; font-weight: 600; cursor: pointer; transition: transform .08s ease, filter .15s ease, box-shadow .15s ease; box-shadow: 0 8px 18px rgba(43,135,255,.25); }
-.primary-btn:hover { filter: brightness(1.05); }
-.primary-btn:active { transform: translateY(1px) scale(0.995); }
-.primary-btn:disabled { filter: grayscale(.4); cursor: not-allowed; }
-.ghost-btn { background: #0f1317; color: #e6e8ea; border: 1px solid #22303a; border-radius: 12px; padding: 10px 14px; cursor: pointer; transition: transform .08s ease, border-color .15s ease; }
-.ghost-btn:hover { transform: translateY(-1px); border-color: #2b87ff; }
-.status { min-height: 20px; font-size: 12px; color: #9aa4af; }
-.divider { height: 1px; background: #1f2a33; margin: 8px 0 16px 0; border: 0; }
-.stack { display: flex; flex-direction: column; gap: 12px; }
+.wallet #walletAddress { margin: 0; font-size: 12px; color: var(--text-secondary); }
+.card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; box-shadow: none; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+label { font-size: 11px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+input[type="text"] { width: 100%; background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; outline: none; transition: border .15s ease; font-size: 14px; }
+input[type="text"]:focus { border-color: var(--accent-primary); }
+
+.custom-dropdown { position: relative; width: 100%; }
+.dropdown-toggle { width: 100%; background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; outline: none; transition: border .15s ease; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+.dropdown-toggle:hover { border-color: var(--accent-primary); }
+.dropdown-toggle.open { border-color: var(--accent-primary); }
+.dropdown-menu { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; max-height: 200px; overflow-y: auto; }
+.dropdown-item { padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background .15s ease; }
+.dropdown-item:hover { background: var(--bg-tertiary); }
+.dropdown-item.selected { background: rgba(35,134,54,0.1); }
+.token-icon { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; }
+.token-name { font-weight: 500; }
+.token-symbol { color: var(--text-secondary); font-size: 12px; }
+.dropdown-arrow { transition: transform .15s ease; }
+.dropdown-toggle.open .dropdown-arrow { transform: rotate(180deg); }
+.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.swap-actions { display: flex; flex-direction: column; gap: 8px; }
+.primary-btn { width: 100%; background: var(--accent-primary); color: #fff; border: 0; border-radius: 8px; padding: 12px; font-weight: 600; cursor: pointer; transition: all .15s ease; font-size: 14px; }
+.primary-btn:hover { background: #2ea043; }
+.primary-btn:active { transform: translateY(1px); }
+.primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.ghost-btn { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 12px; cursor: pointer; transition: all .15s ease; font-size: 12px; }
+.ghost-btn:hover { border-color: var(--accent-primary); background: var(--bg-primary); }
+.status { min-height: 16px; font-size: 12px; color: var(--text-secondary); }
+.divider { height: 1px; background: var(--border-color); margin: 12px 0; border: 0; }
+.stack { display: flex; flex-direction: column; gap: 8px; }
 .row-inline { display: flex; gap: 8px; align-items: center; }
-/* Switch button between tokens */
-.switch-wrap { display: flex; justify-content: center; }
-.switch-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid #22303a; background: #0f1317; color: #e6e8ea; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: transform .25s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease; box-shadow: 0 6px 14px rgba(0,0,0,.25); }
-.switch-btn:hover { transform: rotate(180deg) scale(1.04); border-color: #2b87ff; background: #101820; }
-.flash { animation: flash 500ms ease; }
-@keyframes flash { 0%{ box-shadow: 0 0 0 0 rgba(43,135,255,.0);} 50%{ box-shadow: 0 0 0 6px rgba(43,135,255,.15);} 100%{ box-shadow: 0 0 0 0 rgba(43,135,255,.0);} }
-/* Button press pulse */
-.primary-btn.pulse { animation: pulse 600ms ease; }
-@keyframes pulse { 0%{ box-shadow: 0 0 0 0 rgba(43,135,255,.35);} 100%{ box-shadow: 0 0 0 18px rgba(43,135,255,0);} }
+.switch-wrap { display: flex; justify-content: center; margin: 8px 0; }
+.switch-btn { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s ease; font-size: 16px; }
+.switch-btn:hover { border-color: var(--accent-primary); background: var(--bg-tertiary); color: var(--text-primary); }
+.flash { animation: flash 300ms ease; }
+@keyframes flash { 0%{ border-color: var(--accent-primary); } 50%{ border-color: var(--accent-primary); } 100%{ border-color: var(--border-color); } }
+
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-tertiary: #f6f8fa;
+  --text-primary: #24292f;
+  --text-secondary: #656d76;
+  --border-color: #d0d7de;
+  --border-hover: #0969da;
+  --accent-primary: #238636;
+  --accent-secondary: #0969da;
+}
+
+[data-theme="light"] .card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: none;
+}
+
+[data-theme="light"] .primary-btn:hover {
+  background: #2ea043;
+}
+
+.page-section { display: none; }
+.page-section.active { display: block; }
 @media (max-width: 600px) {
   .row, .controls { grid-template-columns: 1fr; }
 }
 </style>
 </head>
-<body style="font-family: Arial; padding: 20px;">
+<body>
+<nav class="nav">
+  <div class="nav-container">
+    <div class="nav-menu">
+      <button class="nav-item active" data-page="swap">Swap</button>
+      <button class="nav-item" data-page="pool">Pool</button>
+    </div>
+    <div class="title" style="position: absolute; left: 50%; top: 20px; transform: translateX(-50%); text-align: center; width: max-content; pointer-events:none; font-weight: 700; font-size: 20px;">Simple Crypto Exchange</div>
+    <div class="nav-actions">
+      <button id="connectWallet" class="ghost-btn">Connect Wallet</button>
+      <button id="disconnectWallet" class="ghost-btn">Disconnect</button>
+      <button id="themeToggle" class="theme-toggle" title="Toggle theme">🌙</button>
+    </div>
+  </div>
+</nav>
+
 <div class="container">
-<div class="topbar">
-<div class="brand"><h2>Simple Dex</h2></div>
-<div class="wallet">
-<button id="connectWallet" class="ghost-btn">Connect Wallet</button>
-<button id="disconnectWallet" class="ghost-btn">Disconnect</button>
+<div class="wallet" style="margin: 16px 0; text-align: right;">
 <p id="walletAddress">Wallet: Not connected</p>
 </div>
-</div>
 
+<div id="swapPage" class="page-section active">
 <div class="card">
 <div class="stack">
 
 <div class="row">
 <div class="field">
-<label>From Token</label>
-<select id="tokenFrom">
-  <option value="WETH">WETH</option>
-  <option value="DAI">DAI</option>
-  <option value="USDC">USDC</option>
-  <option value="USDT">USDT</option>
-</select>
+<label>From</label>
+<div class="custom-dropdown" id="tokenFromDropdown">
+  <div class="dropdown-toggle" onclick="toggleDropdown('tokenFromDropdown')">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png" alt="WETH" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiM2Mzc5RUYiLz4KPHN2ZyB4PSI1IiB5PSI1IiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiPgo8L3N2Zz4KPC9zdmc+'">
+      <span class="token-name">WETH</span>
+    </div>
+    <span class="dropdown-arrow">▼</span>
+  </div>
+  <div class="dropdown-menu" style="display: none;">
+    <div class="dropdown-item selected" data-value="WETH" onclick="selectToken('tokenFromDropdown', 'WETH', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png" alt="WETH" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiM2Mzc5RUYiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Wrapped Ethereum</div>
+        <div class="token-symbol">WETH</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="DAI" onclick="selectToken('tokenFromDropdown', 'DAI', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png" alt="DAI" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiNGQ0E2NDEiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Dai Stablecoin</div>
+        <div class="token-symbol">DAI</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="USDC" onclick="selectToken('tokenFromDropdown', 'USDC', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiMyNjc0RUEiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">USD Coin</div>
+        <div class="token-symbol">USDC</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="USDT" onclick="selectToken('tokenFromDropdown', 'USDT', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png" alt="USDT" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiMyNkEzRjQiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Tether USD</div>
+        <div class="token-symbol">USDT</div>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 <div class="field">
-<label>To Token</label>
-<select id="tokenTo">
-  <option value="DAI">DAI</option>
-  <option value="USDC">USDC</option>
-  <option value="USDT">USDT</option>
-  <option value="WETH">WETH</option>
-</select>
+<label>To</label>
+<div class="custom-dropdown" id="tokenToDropdown">
+  <div class="dropdown-toggle" onclick="toggleDropdown('tokenToDropdown')">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png" alt="DAI" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiNGQ0E2NDEiLz4KPC9zdmc+'">
+      <span class="token-name">DAI</span>
+    </div>
+    <span class="dropdown-arrow">▼</span>
+  </div>
+  <div class="dropdown-menu" style="display: none;">
+    <div class="dropdown-item" data-value="WETH" onclick="selectToken('tokenToDropdown', 'WETH', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png" alt="WETH" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiM2Mzc5RUYiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Wrapped Ethereum</div>
+        <div class="token-symbol">WETH</div>
+      </div>
+    </div>
+    <div class="dropdown-item selected" data-value="DAI" onclick="selectToken('tokenToDropdown', 'DAI', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png" alt="DAI" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiNGQ0E2NDEiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Dai Stablecoin</div>
+        <div class="token-symbol">DAI</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="USDC" onclick="selectToken('tokenToDropdown', 'USDC', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiMyNjc0RUEiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">USD Coin</div>
+        <div class="token-symbol">USDC</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="USDT" onclick="selectToken('tokenToDropdown', 'USDT', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png" alt="USDT" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiMyNkEzRjQiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Tether USD</div>
+        <div class="token-symbol">USDT</div>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 </div>
 
 <div class="switch-wrap">
-<button id="switchPair" class="switch-btn" aria-label="Switch tokens">⟲</button>
+<button id="switchPair" class="switch-btn" aria-label="Switch tokens">⇄</button>
 </div>
 
 <div class="controls">
 <div class="field">
-<label>Input Mode</label>
-<select id="inputMode">
-  <option value="usd">USD</option>
-  <option value="token">Token Amount</option>
-</select>
+<label>Mode</label>
+<div class="custom-dropdown" id="inputModeDropdown">
+  <div class="dropdown-toggle" onclick="toggleDropdown('inputModeDropdown')">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="token-name">USD</span>
+    </div>
+    <span class="dropdown-arrow">▼</span>
+  </div>
+  <div class="dropdown-menu" style="display: none;">
+    <div class="dropdown-item selected" data-value="usd" onclick="selectMode('inputModeDropdown', 'usd', 'USD')">
+      <div>
+        <div class="token-name">USD</div>
+        <div class="token-symbol">Enter USD amount</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="token" onclick="selectMode('inputModeDropdown', 'token', 'Token')">
+      <div>
+        <div class="token-name">Token</div>
+        <div class="token-symbol">Enter token amount</div>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 <div class="field">
-<label>Slippage %</label>
-<input type="text" id="slippage" placeholder="1">
+<label>Slippage(%)</label>
+<input type="text" id="slippage" placeholder="1" value="1">
 </div>
 </div>
 
 <div class="field">
 <label>Amount</label>
-<input type="text" id="amountInput" placeholder="e.g. 10">
+<input type="text" id="amountInput" placeholder="0.0">
 </div>
 
 <hr class="divider">
@@ -110,6 +268,165 @@ select:focus, input[type="text"]:focus { border-color: #2b87ff; box-shadow: 0 0 
 <p id="status" class="status"></p>
 </div>
 
+</div>
+</div>
+</div>
+
+<div id="poolPage" class="page-section">
+<div class="card">
+<div class="stack">
+<h3>Add Liquidity</h3>
+
+<div class="row">
+<div class="field">
+<label>Token A</label>
+<div class="custom-dropdown" id="poolTokenADropdown">
+  <div class="dropdown-toggle" onclick="toggleDropdown('poolTokenADropdown')">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png" alt="WETH" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiM2Mzc5RUYiLz4KPC9zdmc+'">
+      <span class="token-name">WETH</span>
+    </div>
+    <span class="dropdown-arrow">▼</span>
+  </div>
+  <div class="dropdown-menu" style="display: none;">
+    <div class="dropdown-item selected" data-value="WETH" onclick="selectToken('poolTokenADropdown', 'WETH', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png" alt="WETH" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiM2Mzc5RUYiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Wrapped Ethereum</div>
+        <div class="token-symbol">WETH</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="DAI" onclick="selectToken('poolTokenADropdown', 'DAI', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png" alt="DAI" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiNGQ0E2NDEiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Dai Stablecoin</div>
+        <div class="token-symbol">DAI</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="USDC" onclick="selectToken('poolTokenADropdown', 'USDC', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiMyNjc0RUEiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">USD Coin</div>
+        <div class="token-symbol">USDC</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="USDT" onclick="selectToken('poolTokenADropdown', 'USDT', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png" alt="USDT" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiMyNkEzRjQiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Tether USD</div>
+        <div class="token-symbol">USDT</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="field">
+<label>Token B</label>
+<div class="custom-dropdown" id="poolTokenBDropdown">
+  <div class="dropdown-toggle" onclick="toggleDropdown('poolTokenBDropdown')">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png" alt="DAI" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiNGQ0E2NDEiLz4KPC9zdmc+'">
+      <span class="token-name">DAI</span>
+    </div>
+    <span class="dropdown-arrow">▼</span>
+  </div>
+  <div class="dropdown-menu" style="display: none;">
+    <div class="dropdown-item" data-value="WETH" onclick="selectToken('poolTokenBDropdown', 'WETH', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png" alt="WETH" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiM2Mzc5RUYiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Wrapped Ethereum</div>
+        <div class="token-symbol">WETH</div>
+      </div>
+    </div>
+    <div class="dropdown-item selected" data-value="DAI" onclick="selectToken('poolTokenBDropdown', 'DAI', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png" alt="DAI" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiNGQ0E2NDEiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Dai Stablecoin</div>
+        <div class="token-symbol">DAI</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="USDC" onclick="selectToken('poolTokenBDropdown', 'USDC', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png" alt="USDC" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiMyNjc0RUEiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">USD Coin</div>
+        <div class="token-symbol">USDC</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="USDT" onclick="selectToken('poolTokenBDropdown', 'USDT', 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png')">
+      <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png" alt="USDT" class="token-icon" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMTAiIGZpbGw9IiMyNkEzRjQiLz4KPC9zdmc+'">
+      <div>
+        <div class="token-name">Tether USD</div>
+        <div class="token-symbol">USDT</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<div class="controls">
+<div class="field">
+<label>Mode</label>
+<div class="custom-dropdown" id="poolInputModeDropdown">
+  <div class="dropdown-toggle" onclick="toggleDropdown('poolInputModeDropdown')">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="token-name">USD</span>
+    </div>
+    <span class="dropdown-arrow">▼</span>
+  </div>
+  <div class="dropdown-menu" style="display: none;">
+    <div class="dropdown-item selected" data-value="usd" onclick="selectMode('poolInputModeDropdown', 'usd', 'USD')">
+      <div>
+        <div class="token-name">USD</div>
+        <div class="token-symbol">Enter USD amount</div>
+      </div>
+    </div>
+    <div class="dropdown-item" data-value="token" onclick="selectMode('poolInputModeDropdown', 'token', 'Token')">
+      <div>
+        <div class="token-name">Token</div>
+        <div class="token-symbol">Enter token amount</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="field">
+<label>Slippage(%)</label>
+<input type="text" id="poolSlippage" placeholder="1" value="1">
+</div>
+</div>
+
+<div class="field">
+<label>Amount A</label>
+<input type="text" id="poolAmountA" placeholder="0.0">
+</div>
+
+<div class="field">
+<label>Amount B (auto)</label>
+<input type="text" id="poolAmountB" placeholder="0.0" readonly style="background: var(--bg-tertiary); opacity: 0.7;">
+</div>
+
+<hr class="divider">
+
+<div class="swap-actions">
+<button id="addLiquidityBtn" class="primary-btn">Add Liquidity</button>
+<p id="poolStatus" class="status"></p>
+</div>
+
+</div>
+</div>
+
+<div class="card" style="margin-top: 20px;">
+<div class="stack">
+<h3>My Positions</h3>
+
+<div id="positionsList" style="min-height: 100px; padding: 16px; background: var(--bg-tertiary); border-radius: 12px; text-align: center; color: var(--text-secondary);">
+  <p>No liquidity positions found.</p>
+  <p style="font-size: 12px; margin-top: 8px;">Connect your wallet and add liquidity to see your positions here.</p>
+</div>
+</div>
+
+</div>
 </div>
 </div>
 
