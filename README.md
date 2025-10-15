@@ -4,6 +4,16 @@
 [![Preview](https://img.shields.io/badge/Preview-Latest_Deploy-blue?style=flat-square)](https://mydex-seven.vercel.app)
 Video tutorial: [Watch on YouTube](https://youtu.be/DxhU5wpNu9o?si=2BjQ4SWRPwDWEMac)
 
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/darkmode.png">
+    <source media="(prefers-color-scheme: light)" srcset="assets/lightmode.png">
+    <img alt="Uniswap V2 UI Preview" src="assets/lightmode.png" width="600">
+  </picture>
+</p>
+
+
 A simple Uniswap V2-style token swap interface built with **HTML + JS + MetaMask + Ethers.js**.
 
 - Frontend: `public/index.html`, `public/swap.js`
